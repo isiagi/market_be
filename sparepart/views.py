@@ -1,24 +1,15 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets
 from .models import SparePart
 from .serializers import SparePartSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import SparePartFilter
 
-# Create your views here.
 class SparePartViewSet(viewsets.ModelViewSet):
     serializer_class = SparePartSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'make', 'model']
-    ordering_fields = ['price', 'created_at']
-
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = SparePartFilter
     
     def get_queryset(self):
-        # Get all spare parts
-        queryset = SparePart.objects.all()
-        
-        # Annotate queryset with custom ordering
-        queryset = queryset.select_related('seller').order_by(
-            '-seller__is_paid_seller',  # Paid sellers first
-            '-is_featured',             # Featured items next
-            '-created_at'               # Newest items next
-        )
-        
-        return queryset
+        return SparePart.objects.select_related(
+            'seller', 'category', 'subcategory'
+        ).all()

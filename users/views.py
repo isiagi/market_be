@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate
 from .models import CustomUser
 from .serializers import CustomUserSerializer, LoginSerializer
 from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 
 
 class AuthViewSet(viewsets.GenericViewSet):
@@ -40,7 +41,8 @@ class AuthViewSet(viewsets.GenericViewSet):
             'token': token.key,
             'user_id': user.id,
             'username': user.username,
-            'email': user.email
+            'email': user.email,
+            'seller_type': user.seller_type
         })
 
     @action(detail=False, methods=['post'])
@@ -70,7 +72,8 @@ class AuthViewSet(viewsets.GenericViewSet):
             'token': token.key,
             'user_id': user.id,
             'username': user.username,
-            'email': user.email
+            'email': user.email,
+            'seller_type': user.seller_type
         }, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['put', 'patch'])
@@ -87,8 +90,12 @@ class AuthViewSet(viewsets.GenericViewSet):
             'email': updated_user.email
         })
     
-    # logout
-    @action(detail=False, methods=['post'])
+   #In your ViewSet class:
+    permission_classes([IsAuthenticated])
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def logout(self, request):
-        request.user.auth_token.delete()
-        return Response({'message': 'Logged out successfully'})
+        try:
+            request.user.auth_token.delete()
+            return Response({'message': 'Logged out successfully'})
+        except AttributeError:
+            return Response({'error': 'User not authenticated'}, status=401)

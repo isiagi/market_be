@@ -10,6 +10,7 @@ class CustomUser(AbstractUser):
     
     seller_type = models.CharField(max_length=20, choices=SELLER_TYPES, blank=True, null=True)
     business_name = models.CharField(max_length=200, blank=True, null=True)
+    business_address = models.CharField(max_length=200, blank=True, null=True)
     contact_phone = models.CharField(max_length=20, blank=True, null=True)
     contact_email = models.EmailField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)

@@ -37,11 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'users',
     'sparepart',
     'order',
+    'category',
 ]
 
 MIDDLEWARE = [
@@ -52,9 +55,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = 'server.urls'
+
+CORS_ALLOWED_ORIGINS = [
+    "https://example.com",
+    "https://sub.example.com",
+    "http://localhost:3000",
+    "http://127.0.0.1:9000",
+]
 
 TEMPLATES = [
     {
@@ -73,7 +85,12 @@ TEMPLATES = [
 ]
 
 REST_FRAMEWORK = {
+     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
     'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
@@ -84,6 +101,23 @@ REST_FRAMEWORK = {
 WSGI_APPLICATION = 'server.wsgi.application'
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dlwwwlysp',
+    'API_KEY': '621165238251166',
+    'API_SECRET': 'H5F9cBgQTD7yCUkanRoxyFRZb9g'
+}
+
+# Initialize cloudinary
+cloudinary.config(
+    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key=CLOUDINARY_STORAGE['API_KEY'],
+    api_secret=CLOUDINARY_STORAGE['API_SECRET']
+)
 
 
 # Database
