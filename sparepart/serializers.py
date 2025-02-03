@@ -12,3 +12,10 @@ class SparePartSerializer(serializers.ModelSerializer):
                  'subcategory', 'subcategory_name', 'name', 'description',
                  'make', 'model', 'year', 'year_end', 'condition',
                  'stock_quantity', 'price', 'is_featured', 'created_at']
+
+
+    # check seller seller_type is SHOP
+    def validate_seller(self, value):
+        if value.seller_type != 'SHOP':
+            raise serializers.ValidationError('Seller type must be SHOP')
+        return value 
