@@ -3,7 +3,7 @@ from .models import SparePart
 from .serializers import SparePartSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import SparePartFilter
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -11,7 +11,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 class SparePartViewSet(viewsets.ModelViewSet):
     serializer_class = SparePartSerializer
     parser_classes = (MultiPartParser, FormParser)
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = SparePartFilter
     
