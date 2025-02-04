@@ -60,12 +60,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'server.urls'
 
-CORS_ALLOWED_ORIGINS = [
-    "https://kiseka-online-6eum.vercel.app",
-    "https://sub.example.com",
-    "http://localhost:3000",
-    "http://127.0.0.1:9000",
-]
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 TEMPLATES = [
     {
