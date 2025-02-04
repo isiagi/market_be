@@ -32,3 +32,13 @@ class SparePart(models.Model):
 
     class Meta:
         ordering = ['-seller__is_paid_seller', '-is_featured', '-created_at']
+
+
+class SparePartImage(models.Model):
+    spare_part = models.ForeignKey('SparePart', on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='sparepart_images/')
+
+    def __str__(self):
+        return self.spare_part.name
+
+

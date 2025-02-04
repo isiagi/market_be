@@ -102,33 +102,41 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
+import environ
+import os
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dlwwwlysp',
-    'API_KEY': '621165238251166',
-    'API_SECRET': 'H5F9cBgQTD7yCUkanRoxyFRZb9g'
+# Initialize Django-environ
+env = environ.Env(DEBUG=(bool, False))
+
+# Define a path to your project's .env file (optional)
+env_file = os.path.join(BASE_DIR, ".env")
+
+# Load environment variables from the .env file (if it exists)
+env.read_env(env_file)
+
+
+
+import dj_database_url
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=env("DATABASE_URL"),
+        conn_max_age=env("CONN_MAX_AGE", cast=int),
+        ssl_require=env("SSL_REQUIRE", cast=bool),
+        conn_health_checks=env("CONN_HEALTH_CHECKS", cast=bool),
+    )
 }
-
-# Initialize cloudinary
-cloudinary.config(
-    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
-    api_key=CLOUDINARY_STORAGE['API_KEY'],
-    api_secret=CLOUDINARY_STORAGE['API_SECRET']
-)
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
@@ -166,6 +174,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
