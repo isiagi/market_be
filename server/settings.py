@@ -48,25 +48,23 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
 ROOT_URLCONF = 'server.urls'
 
 CORS_ALLOWED_ORIGINS = [
-    "https://example.com",
+    "https://kiseka-online-6eum.vercel.app",
     "https://sub.example.com",
     "http://localhost:3000",
     "http://127.0.0.1:9000",
-    "https://kiseka-online-6eum.vercel.app"
 ]
 
 TEMPLATES = [
