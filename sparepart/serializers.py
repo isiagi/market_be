@@ -20,6 +20,8 @@ class SparePartImageSerializer(serializers.ModelSerializer):
 
 class SparePartSerializer(serializers.ModelSerializer):
     seller_name = serializers.CharField(source='seller.business_name', read_only=True)
+    seller_contact = serializers.CharField(source='seller.contact_phone', read_only=True)
+    seller_address = serializers.CharField(source='seller.business_address', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     subcategory_name = serializers.CharField(source='subcategory.name', read_only=True)
     images = SparePartImageSerializer(many=True, read_only=True)
@@ -32,7 +34,7 @@ class SparePartSerializer(serializers.ModelSerializer):
     class Meta:
         model = SparePart
         fields = ['id', 'seller', 'seller_name', 'category', 'category_name',
-                 'subcategory', 'subcategory_name', 'name', 'description',
+                 'subcategory', 'subcategory_name', 'name', 'description', 'seller_contact', 'seller_address',
                  'make', 'model', 'year', 'year_end', 'condition', 'images', 'uploaded_images',
                  'stock_quantity', 'price', 'is_featured', 'created_at']
 
