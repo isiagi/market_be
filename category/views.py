@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from .models import Category
-from .serializers import CategorySerializer
+from .serializers import CategorySerializer, CategoryWithSubsSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -29,4 +29,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
         category = self.get_object()
         subcategories = category.subcategories.all()
         serializer = CategorySerializer(subcategories, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def categories_with_subs(self, request):
+        # Get only parent categories with their subcategories
+        categories = Category.objects.filter(parent=None).prefetch_related('subcategories')
+        serializer = CategoryWithSubsSerializer(categories, many=True)
         return Response(serializer.data)
