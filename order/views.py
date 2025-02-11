@@ -1,13 +1,19 @@
 from rest_framework import viewsets, permissions
 from .models import Order
 from .serializers import OrderSerializer
+from django.db import models
 
-# Create your views here.
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    # Get orders buyer
     def get_queryset(self):
-        return self.queryset.filter(buyer=self.request.user)
+        user = self.request.user
+        # Get orders where user is either buyer or seller
+        return Order.objects.filter(
+            models.Q(buyer=user) | models.Q(spare_part__seller=user)
+        ).select_related(
+            'buyer',
+            'spare_part',
+            'spare_part__seller'
+        ).order_by('-created_at')
