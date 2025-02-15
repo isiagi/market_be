@@ -85,7 +85,7 @@ class Command(BaseCommand):
             for component in components:
                 _, created = Category.objects.get_or_create(
                     name=component,
-                    slug=slugify(f"{main_category}-{component}"),
+                    slug=slugify(f"{component}"),
                     parent=main_cat
                 )
                 
