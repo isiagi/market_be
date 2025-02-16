@@ -61,6 +61,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'server.urls'
 
 CORS_ALLOWED_ORIGINS = [
+    "https://www.kisekaonline.com",
     "https://kiseka-online-6eum.vercel.app",
     "https://sub.example.com",
     "http://localhost:3000",
