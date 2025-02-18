@@ -1,9 +1,20 @@
 from rest_framework import serializers
 from .models import CustomUser
 from django.contrib.auth import authenticate
+from django.core.validators import RegexValidator
 
 class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
+    username = serializers.CharField(
+        max_length=150,
+        validators=[
+            RegexValidator(
+                regex=r'^[a-zA-Z0-9\s]+$',  # Updated regex to match model
+                message='Username can only contain letters, numbers, and spaces.',
+                code='invalid_username'
+            ),
+        ]
+    )
 
     class Meta:
         model = CustomUser
@@ -15,6 +26,11 @@ class CustomUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
         }
+
+    def validate_username(self, value):
+        # Normalize username by removing extra whitespace
+        normalized_username = ' '.join(value.split())
+        return normalized_username
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
@@ -35,7 +51,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
             
         instance.save()
         return instance
-    
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -46,6 +61,8 @@ class LoginSerializer(serializers.Serializer):
         password = attrs.get('password')
         
         if username and password:
+            # Normalize username before authentication
+            username = ' '.join(username.split())
             user = authenticate(username=username, password=password)
             if not user:
                 raise serializers.ValidationError('Invalid credentials')
