@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%#hrf^46+9(#^_%)n&lk3r=6-exug)n2unol(9&77s@bbz%f58'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['market-be.onrender.com', 'localhost', '127.0.0.1']
 
