@@ -8,6 +8,8 @@ from .models import CustomUser
 from .serializers import CustomUserSerializer, LoginSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
+from django.db import IntegrityError
+from rest_framework import serializers
 
 
 class AuthViewSet(viewsets.GenericViewSet):
@@ -49,32 +51,46 @@ class AuthViewSet(viewsets.GenericViewSet):
     @permission_classes([AllowAny])
     def signup(self, request):
         serializer = CustomUserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
         
-        # Check if user exists
-        if CustomUser.objects.filter(email=serializer.validated_data['email']).exists():
+        try:
+            serializer.is_valid(raise_exception=True)
+            
+            # Check if user exists by email
+            if CustomUser.objects.filter(email=serializer.validated_data['email']).exists():
+                return Response(
+                    {'error': 'User with this email already exists'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Check if username exists (case-insensitive)
+            username = serializer.validated_data.get('username')
+            if username and CustomUser.objects.filter(username__iexact=username).exists():
+                return Response(
+                    {'error': 'User with this username already exists'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            user = serializer.save()
+            token, _ = Token.objects.get_or_create(user=user)
+            
+            return Response({
+                'token': token.key,
+                'user_id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'seller_type': user.seller_type
+            }, status=status.HTTP_201_CREATED)
+            
+        except IntegrityError:
             return Response(
-                {'error': 'User with this email already exists'},
+                {'error': 'User with this username already exists'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-        # If is_employer is True, is_applicant should be False, create employer profile
-        # if serializer.validated_data['is_employer']:
-        #     # serializer.validated_data['is_applicant'] = False
-        #     # create employer profile
-        #     EmployerProfile.objects.create(user=serializer.save())
-
-
-        user = serializer.save()
-        token, _ = Token.objects.get_or_create(user=user)
-        
-        return Response({
-            'token': token.key,
-            'user_id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'seller_type': user.seller_type
-        }, status=status.HTTP_201_CREATED)
+        except serializers.ValidationError as e:
+            return Response(
+                {'error': e.detail},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     @action(detail=True, methods=['put', 'patch'])
     @permission_classes([AllowAny])
