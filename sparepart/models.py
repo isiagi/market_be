@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from users.models import CustomUser as Profile
 from category.models import Category
+from cloudinary.models import CloudinaryField
 
 
 class SparePart(models.Model):
@@ -36,7 +37,7 @@ class SparePart(models.Model):
 
 class SparePartImage(models.Model):
     spare_part = models.ForeignKey('SparePart', on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='sparepart_images/')
+    image = CloudinaryField('image', folder='sparepart_images')
 
     def __str__(self):
         return self.spare_part.name
