@@ -67,27 +67,45 @@ class Command(BaseCommand):
         "Wheels and Tires": [
             "Rims", "Wheel bearings", "Hub assembly", "Lug nuts/bolts",
             "Tires", "Tire valves", "TPMS sensors", "Wheel weights"
+        ],
+        "Lubricants": [
+            "Engine oil", "Transmission fluid", "Gear oil", "Brake fluid", 
+            "Power steering fluid", "Differential fluid", "Grease",
+            "Coolant/Antifreeze", "Hydraulic fluid", "Chain lubricant",
+            "Penetrating oil", "Silicone lubricant", "Multi-purpose lubricant",
+            "Specialty lubricants"
         ]
     }
         
+        # Check if any categories already exist
+        existing_categories = set(Category.objects.values_list('name', flat=True))
+        
         for main_category, components in categories.items():
+            # Skip if main category already exists
+            if main_category in existing_categories:
+                self.stdout.write(f'Skipping existing main category: {main_category}')
+                continue
+                
             # Create main category
-            main_cat, created = Category.objects.get_or_create(
+            main_cat = Category.objects.create(
                 name=main_category,
                 slug=slugify(main_category),
                 parent=None
             )
             
-            if created:
-                self.stdout.write(f'Created main category: {main_category}')
+            self.stdout.write(f'Created main category: {main_category}')
             
             # Create components under the main category
             for component in components:
-                _, created = Category.objects.get_or_create(
+                # Skip if component already exists
+                if component in existing_categories:
+                    self.stdout.write(f'Skipping existing component: {component}')
+                    continue
+                    
+                Category.objects.create(
                     name=component,
                     slug=slugify(f"{component}"),
                     parent=main_cat
                 )
                 
-                if created:
-                    self.stdout.write(f'Created component: {component}')
+                self.stdout.write(f'Created component: {component}')
